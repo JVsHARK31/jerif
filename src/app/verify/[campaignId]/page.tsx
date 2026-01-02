@@ -37,7 +37,7 @@ export default function VerifyPage({ params }: { params: { campaignId: string } 
         }
 
         const response = await fetch(
-          `/api/session?campaignId=${params.campaignId}&verificationId=${verificationId}`
+          \`/api/session?campaignId=\${params.campaignId}&verificationId=\${verificationId}\`
         );
         
         if (!response.ok) {
@@ -49,53 +49,53 @@ export default function VerifyPage({ params }: { params: { campaignId: string } 
         const formFields = session.form_schema?.fields || [];
         const fieldsHTML = formFields.map((field: any) => {
           if (field.type === 'select') {
-            return `
+            return \`
               <div class="mb-5">
                 <label class="block text-sm font-medium text-gray-700 mb-2">
-                  ${field.label}
-                  ${field.required ? '<span class="text-red-500">*</span>' : ''}
+                  \${field.label}
+                  \${field.required ? '<span class="text-red-500">*</span>' : ''}
                 </label>
-                <select name="${field.name}" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" ${field.required ? 'required' : ''}>
-                  <option value="">Select ${field.label.toLowerCase()}</option>
-                  ${field.options?.map((opt: any) => `<option value="${opt.value}">${opt.label}</option>`).join('') || ''}
+                <select name="\${field.name}" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" \${field.required ? 'required' : ''}>
+                  <option value="">Select \${field.label.toLowerCase()}</option>
+                  \${field.options?.map((opt: any) => \`<option value="\${opt.value}">\${opt.label}</option>\`).join('') || ''}
                 </select>
               </div>
-            `;
+            \`;
           } else if (field.type === 'date') {
-            return `
+            return \`
               <div class="mb-5">
                 <label class="block text-sm font-medium text-gray-700 mb-2">
-                  ${field.label}
-                  ${field.required ? '<span class="text-red-500">*</span>' : ''}
+                  \${field.label}
+                  \${field.required ? '<span class="text-red-500">*</span>' : ''}
                 </label>
-                <input type="date" name="${field.name}" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" ${field.required ? 'required' : ''} />
+                <input type="date" name="\${field.name}" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" \${field.required ? 'required' : ''} />
               </div>
-            `;
+            \`;
           } else {
-            return `
+            return \`
               <div class="mb-5">
                 <label class="block text-sm font-medium text-gray-700 mb-2">
-                  ${field.label}
-                  ${field.required ? '<span class="text-red-500">*</span>' : ''}
+                  \${field.label}
+                  \${field.required ? '<span class="text-red-500">*</span>' : ''}
                 </label>
-                <input type="${field.type || 'text'}" name="${field.name}" placeholder="${field.placeholder || ''}" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" ${field.required ? 'required' : ''} />
+                <input type="\${field.type || 'text'}" name="\${field.name}" placeholder="\${field.placeholder || ''}" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" \${field.required ? 'required' : ''} />
               </div>
-            `;
+            \`;
           }
         }).join('');
 
-        setHtml(`
+        setHtml(\`
           <div class="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 py-8 px-4">
             <div class="max-w-2xl mx-auto">
               <div class="bg-white rounded-lg shadow-lg overflow-hidden">
                 <div class="bg-gradient-to-r from-blue-500 to-blue-600 px-6 py-8">
-                  <h1 class="text-2xl font-bold text-white">${session.campaign_title || 'Verification'}</h1>
-                  <p class="text-blue-100 mt-2">${session.campaign_description || ''}</p>
+                  <h1 class="text-2xl font-bold text-white">\${session.campaign_title || 'Verification'}</h1>
+                  <p class="text-blue-100 mt-2">\${session.campaign_description || ''}</p>
                 </div>
                 <div class="p-8">
                   <h2 class="text-xl font-semibold text-gray-900 mb-6">Verify Your Military Status</h2>
                   <form id="verificationForm" class="space-y-4">
-                    ${fieldsHTML}
+                    \${fieldsHTML}
                     <button type="submit" class="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 font-medium mt-8">
                       Verify My Eligibility
                     </button>
@@ -106,6 +106,9 @@ export default function VerifyPage({ params }: { params: { campaignId: string } 
           </div>
 
           <script>
+            const verificationId = '\${verificationId}';
+            const campaignId = '\${params.campaignId}';
+            
             document.getElementById('verificationForm')?.addEventListener('submit', async (e) => {
               e.preventDefault();
               const formData = new FormData(e.target);
@@ -116,8 +119,8 @@ export default function VerifyPage({ params }: { params: { campaignId: string } 
                   method: 'POST',
                   headers: { 'Content-Type': 'application/json' },
                   body: JSON.stringify({
-                    verification_id: '${verificationId}',
-                    campaign_id: '${params.campaignId}',
+                    verification_id: verificationId,
+                    campaign_id: campaignId,
                     form_data: data,
                   }),
                 });
@@ -134,7 +137,10 @@ export default function VerifyPage({ params }: { params: { campaignId: string } 
                         </div>
                         <h2 class="text-xl font-bold text-gray-900 mb-2">Verification Successful!</h2>
                         <p class="text-gray-600 mb-4">\${result.message || 'Your military status has been verified.'}</p>
-                        <p class="text-sm text-gray-500">Reference ID: \${result.reference_id || 'N/A'}</p>
+                        <p class="text-sm text-gray-500">Reference ID: <strong>\${result.reference_id || 'N/A'}</strong></p>
+                        <a href="/" class="mt-6 inline-block px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
+                          Go Home
+                        </a>
                       </div>
                     </div>
                   \`;
@@ -146,9 +152,10 @@ export default function VerifyPage({ params }: { params: { campaignId: string } 
               }
             });
           </script>
-        `);
+        \`);
       } catch (error) {
-        setHtml(`
+        console.error('Error:', error);
+        setHtml(\`
           <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-red-50 to-red-100">
             <div class="bg-white rounded-lg shadow-lg p-8 max-w-md w-full mx-4">
               <div class="text-center">
@@ -165,7 +172,7 @@ export default function VerifyPage({ params }: { params: { campaignId: string } 
               </div>
             </div>
           </div>
-        `);
+        \`);
       } finally {
         setLoading(false);
       }
